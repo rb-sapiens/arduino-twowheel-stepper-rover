@@ -2,7 +2,7 @@
   This example code is in the public domain.
   rb-station.com
 */
-// 簡易的な動作を行うサンプル
+// 速度指定のサンプル
 
 #define LEFT_STEPPIN 5
 #define LEFT_DIRPIN 2
@@ -12,6 +12,7 @@
 // パルスを送る際の周波数。単位はマイクロ秒
 #define WAITTIME 1500
 
+
 void setup()
 {
   pinMode(LEFT_STEPPIN, OUTPUT);
@@ -20,37 +21,25 @@ void setup()
   pinMode(RIGHT_DIRPIN, OUTPUT);
 
   Serial.begin( 9600 );
+
+  setMotor(50, 50, 1000);
+  setMotor(100, 100, 1000);
+  setMotor(200, 200, 1000);
+  setMotor(200, -200, 500);
+  setMotor(100, -100, 500);
+  setMotor(0, 0, 1000);
+
 }
  
 void loop() 
 {
-  // 前進
-  setMotor(1,1,1000);
-  delay(1000);
-
-  // 後退
-  setMotor(-1,-1,1000);
-  delay(1000);
-
-  // 右に曲がる
-  setMotor(1,0,1000);
-  delay(1000);
-
-  // 左に曲がる
-  setMotor(0,1,1000);
-  delay(1000);
-
-  // その場で左に回転
-  setMotor(-1,1,1000);
-  delay(1000);
-
-  // その場で右に回転
-  setMotor(1,-1,1000);
-  delay(1000);
 
 }
 
-void setMotor(int left, int right, int duration){
+// left/right: -255〜255の間の数値を指定すると、数値の大きさによって回転スピードが変わる
+//             leftとrightは絶対値が同じか、0の場合のみ対応（left=100, right=200などは不可）
+// duration:   継続時間[ミリ秒]
+void setMotor(int left, int right, long duration){
   // 回転方向の設定
   if(left < 0){
     digitalWrite(LEFT_DIRPIN, LOW);
@@ -64,14 +53,21 @@ void setMotor(int left, int right, int duration){
   }
 
   // パルスを送る回数を計算
-  int pulseNum = duration * 1000 / WAITTIME / 2;
+  long waittime = max(256 - abs(left), 256 - abs(right)) * 10 + 1500;
+  if(left == 0){
+    waittime = (256 - abs(right)) * 10 + 1500;
+  }
+  if(right == 0){
+    waittime = (256 - abs(left)) * 10 + 1500;
+  }
+  long pulseNum = duration * 1000 / waittime / 2;
   for(int i=0;i<pulseNum;i++)
   {
     if(left != 0){ digitalWrite(LEFT_STEPPIN, HIGH);}
     if(right != 0){digitalWrite(RIGHT_STEPPIN, HIGH);}
-    delayMicroseconds(WAITTIME);
+    delayMicroseconds(waittime);
     if(left != 0){ digitalWrite(LEFT_STEPPIN, LOW);}
     if(right != 0){digitalWrite(RIGHT_STEPPIN, LOW);}
-    delayMicroseconds(WAITTIME);
+    delayMicroseconds(waittime);
   }
 }

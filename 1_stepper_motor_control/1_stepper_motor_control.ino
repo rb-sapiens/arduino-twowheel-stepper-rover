@@ -1,8 +1,8 @@
 /*
-  motor control
   This example code is in the public domain.
   rb-station.com
 */
+// 左右のステッピングモータをそれぞれ回転させるサンプル
 
 #define LEFT_STEPPIN 5
 #define LEFT_DIRPIN 2

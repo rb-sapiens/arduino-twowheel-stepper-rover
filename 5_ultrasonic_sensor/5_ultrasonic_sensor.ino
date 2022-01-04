@@ -3,10 +3,10 @@
   This example code is in the public domain.
   rb-station.com
 */
-// シリアルモニタで超音波センサから得られた距離を表示するサンプルです。
+// シリアルモニタで超音波センサから得られた距離を表示するサンプル
 
-#define TRIG 12;
-#define ECHO 13;
+#define TRIG 12
+#define ECHO 13
 
 double duration = 0;
 double distance = 0;
